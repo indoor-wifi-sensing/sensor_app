@@ -1,24 +1,86 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <com.example.iot_termproject.ArrowView
-        android:id="@+id/arrowView"
+    <EditText
+        android:id="@+id/searchEditText"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content"
+        android:layout_marginRight="100dp"
+        android:layout_marginTop="5dp"
+        android:hint="길 찾기 . . ."
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:background="@drawable/edittext_border"
+        android:padding="12dp" />
+
+    <Button
+        android:id="@+id/searchButton"
+        android:layout_alignParentEnd="true"
+        android:layout_width="100dp"
+        android:layout_marginTop="5dp"
+        android:layout_height="wrap_content"
+        android:text="검색"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:background="#007AFF"
+        android:padding="8dp" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_marginTop="100dp"
+        android:layout_below="@id/searchEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/locationTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="현재 위치는 412호 입니다."
+            android:textColor="#000000"
+            android:textSize="20sp" />
+
+    </FrameLayout>
 
     <TextView
-        android:id="@+id/distanceTextView"
-        android:layout_width="wrap_content"
+        android:layout_marginTop="100dp"
+        android:gravity="center"
+        android:layout_below="@id/frameLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp"
-        android:textSize="20sp" />
+        android:text="상단 검색 바를 활용하여\n가고싶은 곳을 찾아보세요."
+        android:textColor="#808080"
+        android:textSize="14sp"
+        android:padding="16dp" />
 
 </RelativeLayout>
+
+
+
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    tools:context=".MainActivity">-->
+
+<!--    <com.example.iot_termproject.ArrowView-->
+<!--        android:id="@+id/arrowView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/distanceTextView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:textSize="20sp" />-->
+
+<!--</RelativeLayout>-->
 
 
     <!--<?xml version="1.0" encoding="utf-8"?>-->
