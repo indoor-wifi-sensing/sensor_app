@@ -15,8 +15,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.RotateAnimation;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -24,14 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private DrawTouchView mView;
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private Sensor magnetometer;
-    private float[] mLastAccelerometer = new float[3];
-    private boolean mLastAccelerometerSet = false;
-    private float[] mLastMagnetometer = new float[3];
-    private boolean mLastMagnetometerSet = false;
-    private float[] mR = new float[9];
-    private float[] mOrientation = new float[3];
-    private float mCurrentDegree = 0f;
     private SensorEventListener sensorEventListener;
 
     @Override
@@ -47,65 +37,21 @@ public class MainActivity extends AppCompatActivity {
         // 가속도계 센서 초기화
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        // 지자기 센서 초기화
-        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-
         // SensorEventListener 초기화
         sensorEventListener = new SensorEventListener() {
-//            @Override
-//            public void onSensorChanged(SensorEvent event) {
-//                // 지자기 센서 값이 변경될 때 호출되는 메서드
-//                float magX = event.values[0];
-//                float magY = event.values[1];
-//                float magZ = event.values[2];
-//                float a = (magX * magY) + (magY * magZ) + (magZ * magX);
-//                double magnitude;
-//                if(a > 0) {
-//                    magnitude = Math.sqrt(a);
-//                } else {
-//                    magnitude = -Math.sqrt(-a);
-//                }
-//
-//                float azimuth = event.values[0];  // 방위각 값
-//                android.util.Log.e("test", "X " + Float.toString(magX));
-//                android.util.Log.e("test", "Y " + Float.toString(magY));
-//                android.util.Log.e("test", "Z " + Float.toString(magZ));
-//                android.util.Log.e("test", "magnitude " + Double.toString(magnitude));
-//
-//                // 지자기 센서 값을 전달하여 이미지 회전
-//                mView.rotateImage((float) magnitude);
-//            }
             @Override
             public void onSensorChanged(SensorEvent event) {
-                if(event.sensor == accelerometer) {
-                    System.arraycopy(event.values, 0, mLastAccelerometer, 0, event.values.length);
-                    mLastAccelerometerSet = true;
-                } else if(event.sensor == magnetometer) {
-                    System.arraycopy(event.values, 0, mLastMagnetometer, 0, event.values.length);
-                    mLastMagnetometerSet = true;
-                }
-                if(mLastAccelerometerSet && mLastMagnetometerSet) {
-                    SensorManager.getRotationMatrix(mR, null, mLastAccelerometer, mLastMagnetometer);
-                    float azimuthinDegress  = (int) ( Math.toDegrees( SensorManager.getOrientation( mR, mOrientation)[0] ) + 360 ) % 360;
-                    android.util.Log.e("test", "Z " + Float.toString(azimuthinDegress));
-                    azimuthinDegress = 360 - azimuthinDegress;
-                    mView.rotateImage((float) azimuthinDegress);
-//                    RotateAnimation ra = new RotateAnimation(
-//                            mCurrentDegree,
-//                            -azimuthinDegress,
-//                            Animation.RELATIVE_TO_SELF, 0.5f,
-//                            Animation.RELATIVE_TO_SELF, 0.5f
-//                    );
-//                    ra.setDuration(250);
-//                    ra.setFillAfter(true);
-//                    mPointer.startAnimation(ra);
-//                    mCurrentDegree = -azimuthinDegress;
-                }
+                // 가속도 센서 값이 변경될 때 호출되는 메서드
+                float x = event.values[0];  // x축 가속도 값
+                float y = event.values[1];  // y축 가속도 값
+
+                // 가속도 센서 값을 전달하여 이미지 회전
+                mView.rotateImage(x, y);
             }
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // 센서의 정확도가 변경될 때 호출되는 메서드
+                // 가속도 센서의 정확도가 변경될 때 호출되는 메서드
             }
         };
     }
@@ -117,8 +63,6 @@ public class MainActivity extends AppCompatActivity {
 
         // 가속도계 센서 등록
         sensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        // 지자기 센서 등록
-        sensorManager.registerListener(sensorEventListener, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
@@ -126,10 +70,9 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
         mView.stopRotation();
 
-        // 지자기 센서 해제
+        // 가속도계 센서 해제
         sensorManager.unregisterListener(sensorEventListener);
     }
-
 
     public class DrawTouchView extends View {
         private static final int ROTATION_DELAY = 1000; // 1초
@@ -142,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         private Matrix matrix;
         private boolean rotating = false;
         private Handler rotationHandler;
-        private String distanceText = "10.2m"; // 추가된 변수: 텍스트
 
         public DrawTouchView(Context context) {
             super(context);
@@ -171,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void startRotation() {
             rotating = true;
-            rotateImage(0);
+            rotateImage(0, 0);
         }
 
         public void stopRotation() {
@@ -179,12 +121,13 @@ public class MainActivity extends AppCompatActivity {
             rotationHandler.removeCallbacksAndMessages(null);
         }
 
-        public void rotateImage(float rotation) {
+        public void rotateImage(float x, float y) {
             if (rotating) {
-//                float rotation = (float) Math.toDegrees(Math.atan2(x, y));
+                float rotation = (float) Math.toDegrees(Math.atan2(x, y));
                 rotation += 180;
                 matrix.setRotate(rotation, image.getWidth() / 2.0f, image.getHeight() / 2.0f);
                 invalidate();
+
             }
         }
 
@@ -199,25 +142,21 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
+            // 이미지 그리기
+            canvasX = canvas.getWidth() + image.getWidth();
+            canvasY = canvas.getHeight() + image.getHeight();
 
+//            android.util.Log.e("test", Float.toString(canvas.getWidth())); // 1080
+//            android.util.Log.e("test", Float.toString(canvas.getHeight())); // 2067
+//            android.util.Log.e("test", Float.toString(image.getWidth())); // 1344
+//            android.util.Log.e("test", Float.toString(image.getHeight())); // 1344
             centerX = canvas.getWidth() / 2.0f - image.getWidth() / 2.0f;
             centerY = canvas.getHeight() / 2.0f - image.getHeight() / 2.0f;
             matrix.postTranslate(centerX, centerY);
             canvas.drawBitmap(image, matrix, paint);
-
-            // 텍스트 그리기
-            float textSize = 40; // 텍스트 크기 설정
-            float textX = (canvas.getWidth() - paint.measureText(distanceText)) / 2.0f; // 가운데 정렬을 위한 X 좌표 계산
-            float textY = textSize * 2; // 상단에 위치할 Y 좌표 설정
-
-            paint.setTextSize(textSize);
-            canvas.drawText(distanceText, textX, textY, paint);
         }
     }
-
 }
-
 
 
 
