@@ -33,6 +33,7 @@ public class ArrowView extends View {
         init();
     }
 
+    
     private void init() {
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeWidth(3);
