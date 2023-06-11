@@ -84,6 +84,7 @@ public class Navigator extends AppCompatActivity {
         private Matrix matrix;
         private boolean rotating = false;
         private Handler rotationHandler;
+        private String distanceText = "10.2m"; // 추가된 변수: 텍스트
 
         public DrawTouchView(Context context) {
             super(context);
@@ -123,7 +124,6 @@ public class Navigator extends AppCompatActivity {
         public void rotateImage(float x, float y) {
             if (rotating) {
                 float rotation = (float) Math.toDegrees(Math.atan2(x, y));
-                rotation += 180;
                 matrix.setRotate(rotation, image.getWidth() / 2.0f, image.getHeight() / 2.0f);
                 invalidate();
 
@@ -153,6 +153,14 @@ public class Navigator extends AppCompatActivity {
             centerY = canvas.getHeight() / 2.0f - image.getHeight() / 2.0f;
             matrix.postTranslate(centerX, centerY);
             canvas.drawBitmap(image, matrix, paint);
+
+            // 텍스트 그리기
+            float textSize = 200; // 텍스트 크기 설정
+            float textX = (canvas.getWidth() - paint.measureText(distanceText)) / 2.0f; // 가운데 정렬을 위한 X 좌표 계산
+            float textY = textSize * 2; // 상단에 위치할 Y 좌표 설정
+
+            paint.setTextSize(textSize);
+            canvas.drawText(distanceText, textX, textY, paint);
         }
     }
 }

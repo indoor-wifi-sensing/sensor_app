@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String text = edit.getText().toString();
                 Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MainActivity.this, Navigator.class));
+                startActivity(new Intent(MainActivity.this, SensorTest.class));
             }
         });
     }
